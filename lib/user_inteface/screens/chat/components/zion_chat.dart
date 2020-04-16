@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zion/service/chat_service.dart';
 import 'package:zion/user_inteface/screens/chat/components/full_image.dart';
@@ -36,6 +38,30 @@ class _ZionChatState extends State<ZionChat> {
   // displays loading indicator if true
   bool isLoadingMore = false;
   List<ChatMessage> falseMessages = [];
+  final focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    // checks if user is typing
+    // send notification to the server if typing
+    // and stop typing
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) async {
+        bool connect = await DataConnectionChecker().hasConnection;
+        if (connect) {
+          if (visible) {
+            ChatServcice.isTyping(
+              widget.chatId,
+              userId: widget.user.uid,
+            );
+          } else {
+            ChatServcice.isTyping(widget.chatId);
+          }
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +83,7 @@ class _ZionChatState extends State<ZionChat> {
       key: widget.chatKey,
       onSend: onSend,
       user: widget.user,
+      focusNode: focusNode,
       inputDecoration: InputDecoration.collapsed(hintText: "Type a message"),
       timeFormat: DateFormat('h:mm a'),
       messages: widget.messages,

@@ -91,4 +91,11 @@ class ChatServcice {
           .updateData({adminId: lastSeen});
     } catch (e) {}
   }
+
+  // checks if user is typing
+  static void isTyping(String chatId, {String userId}) {
+    Firestore.instance.collection('Typing').document(chatId).setData(
+      {'typing': userId ?? ""},
+    );
+  }
 }

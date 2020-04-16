@@ -41,6 +41,38 @@ class _AdminChatPageState extends State<AdminChatPage> {
     lastActive = timeago.format(DateTime.now().subtract(result));
   }
 
+  Widget userTyping() {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance
+          .collection('Typing')
+          .document(widget.chatId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          String isTyping = snapshot.data.data['typing'];
+          if (isTyping != null &&
+              isTyping.isNotEmpty &&
+              isTyping != widget.adminId) {
+            return Text(
+              'Typing',
+              style: GoogleFonts.abel(
+                fontWeight: FontWeight.bold,
+                fontSize: 12.0,
+              ),
+            );
+          }
+        }
+        return Text(
+          widget.responderProfile.online ? 'Online' : 'Last seen: $lastActive',
+          style: GoogleFonts.abel(
+            fontWeight: FontWeight.bold,
+            fontSize: 12.0,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,15 +92,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
                   widget.responderProfile.name,
                   style: GoogleFonts.abel(fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  widget.responderProfile.online
-                      ? 'Online'
-                      : 'Last seen: $lastActive',
-                  style: GoogleFonts.abel(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.0,
-                  ),
-                ),
+                userTyping(),
               ],
             )
           ],
