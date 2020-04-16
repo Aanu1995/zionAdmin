@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "824969897095",
+    "firebase_url": "https://zion-7f6c7.firebaseio.com",
+    "project_id": "zion-7f6c7",
+    "storage_bucket": "zion-7f6c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824969897095:android:4ae6058a44732c417fc422",
+        "android_client_info": {
+          "package_name": "com.annulus.zion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824969897095-9438ti2m67fercslllcve7b9f0f5pf2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annulus.zion",
+            "certificate_hash": "eaa5a6e01525ea178c267bfbcc5c979f5a37628e"
+          }
+        },
+        {
+          "client_id": "824969897095-hpvrfle2pm0vc0qq5td6phfvtk2rjtnc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3CNliBgtk73UBcH7iCaztEaWH8lqBOsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824969897095-hpvrfle2pm0vc0qq5td6phfvtk2rjtnc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
