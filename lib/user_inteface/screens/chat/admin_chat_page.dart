@@ -12,6 +12,7 @@ import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
 import 'package:zion/user_inteface/screens/settings/components/components.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:zion/user_inteface/utils/imageUtils.dart';
 
 class AdminChatPage extends StatefulWidget {
   final String chatId;
@@ -98,39 +99,48 @@ class _AdminChatPageState extends State<AdminChatPage> {
           ],
         ),
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance
-              .collection(FirebaseUtils.chat)
-              .document(widget.chatId)
-              .collection(FirebaseUtils.admin)
-              .orderBy('createdAt', descending: true)
-              .limit(20)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Container();
-            } else if (snapshot.hasData) {
-              List<DocumentSnapshot> items = snapshot.data.documents;
-              final messages =
-                  items.map((i) => ChatMessage.fromJson(i.data)).toList();
-              // send last seen of the user in the chat to the server
-              ChatServcice.updateLastSeen(
-                  adminId: widget.adminId, documentId: widget.chatId);
-              return ZionChat(
-                chatKey: _chatViewKey,
-                messages: messages,
-                chatId: widget.chatId,
-                online: widget.responderProfile.online,
-                lastDocumentSnapshot:
-                    items.length != 0 ? items[items.length - 1] : null,
-                user: ChatUser(uid: widget.adminId),
-              );
-            }
-            return Container();
-          },
-        ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            ImageUtils.chatBackground,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance
+                  .collection(FirebaseUtils.chat)
+                  .document(widget.chatId)
+                  .collection(FirebaseUtils.admin)
+                  .orderBy('createdAt', descending: true)
+                  .limit(20)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Container();
+                } else if (snapshot.hasData) {
+                  List<DocumentSnapshot> items = snapshot.data.documents;
+                  final messages =
+                      items.map((i) => ChatMessage.fromJson(i.data)).toList();
+                  // send last seen of the user in the chat to the server
+                  ChatServcice.updateLastSeen(
+                      adminId: widget.adminId, documentId: widget.chatId);
+                  return ZionChat(
+                    chatKey: _chatViewKey,
+                    messages: messages,
+                    chatId: widget.chatId,
+                    online: widget.responderProfile.online,
+                    lastDocumentSnapshot:
+                        items.length != 0 ? items[items.length - 1] : null,
+                    user: ChatUser(uid: widget.adminId),
+                  );
+                }
+                return Container();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

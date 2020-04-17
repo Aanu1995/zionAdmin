@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:zion/service/chat_service.dart';
 import 'package:zion/user_inteface/screens/chat/components/full_image.dart';
 import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
@@ -95,21 +96,23 @@ class _ZionChatState extends State<ZionChat> {
                 tag: image,
                 child: Material(
                   child: InkWell(
-                    child: CachedNetworkImage(
-                      imageUrl: image,
+                    child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.3,
                       width: MediaQuery.of(context).size.width * 0.8,
-                      fit: BoxFit.fitWidth,
-                      placeholder: (context, value) {
-                        return Center(
-                          child: SizedBox(
-                              height: 25.0,
-                              width: 25.0,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                              )),
-                        );
-                      },
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        fit: BoxFit.fitWidth,
+                        placeholder: (context, value) {
+                          return Shimmer.fromColors(
+                            child: Container(
+                              height: double.maxFinite,
+                              width: double.maxFinite,
+                            ),
+                            baseColor: Colors.grey[300],
+                            highlightColor: Colors.grey[100],
+                          );
+                        },
+                      ),
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(

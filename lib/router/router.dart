@@ -8,6 +8,10 @@ class Router {
     Navigator.of(context).pushNamed(page);
   }
 
+  static goToWidget({BuildContext context, Widget page}) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
+  }
+
   static goToReplacementScreen({BuildContext context, String page}) {
     Navigator.of(context).pushReplacementNamed(page);
   }

@@ -19,6 +19,7 @@ class ThemeUtils {
       // defines the primary color and the accent color
       primaryColor: ColorUtils.primaryColor,
       accentColor: ColorUtils.primaryColor,
+      scaffoldBackgroundColor: Colors.grey[200],
       bottomAppBarTheme: BottomAppBarTheme(
         color: ColorUtils.primaryColor,
       ),

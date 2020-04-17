@@ -20,6 +20,7 @@ dependencies:
   fluttertoast: ^4.0.1
   expansion_tile_card: ^1.0.3
   shimmer: ^1.1.1
+  animations: ^1.0.0+5
   badges: ^1.1.1
   flutter_keyboard_visibility: ^0.8.0
 

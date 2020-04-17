@@ -1,33 +1,35 @@
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/utils/utils.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:zion/model/profile.dart';
 import 'package:zion/model/chat.dart';
-import 'package:zion/user_inteface/screens/chat/admin_chat_page.dart';
+import 'package:zion/router/router.dart';
+import 'package:zion/user_inteface/screens/chat/components/chat_widget.dart';
+import 'package:zion/user_inteface/screens/chat/components/group/create_group.dart';
 import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
-import 'package:zion/user_inteface/screens/settings/components/components.dart';
+import 'package:zion/user_inteface/screens/chat/search_page.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
 import 'package:zion/user_inteface/components/shimmer.dart';
 import 'package:provider/provider.dart';
 import 'package:zion/model/app.dart';
-import 'package:badges/badges.dart';
+
+const double _fabDimension = 56.0;
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key key}) : super(key: key);
-
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  FirebaseUser admin; // firebase user
+  List chats = [];
+  FirebaseUser admin;
 
   @override
   void initState() {
     super.initState();
     admin = Provider.of<User>(context, listen: false).user;
-    print(admin.uid);
   }
 
   @override
@@ -35,20 +37,30 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Chats"),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => showSearch(
+              context: context,
+              delegate: SearchChat(chats: chats, admin: admin),
+            ),
+          )
+        ],
       ),
       body: Container(
-        margin: EdgeInsets.symmetric(vertical: 16.0),
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        // gets the list of all chats for the admin
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseUtils.firestore
-              .collection(FirebaseUtils.chat)
-              .snapshots(),
+          stream: Stream.value(Provider.of<QuerySnapshot>(context)),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List chats = snapshot.data.documents;
+              chats = snapshot.data.documents;
               return ListView.builder(
                 itemCount: chats.length,
                 itemBuilder: (context, index) {
                   final chatId = chats[index].documentID;
+                  // gets the user profile for each chat
                   return StreamBuilder<DocumentSnapshot>(
                     stream: FirebaseUtils.firestore
                         .collection(FirebaseUtils.user)
@@ -58,6 +70,7 @@ class _ChatPageState extends State<ChatPage> {
                       if (user.hasData) {
                         final responserProfile =
                             UserProfile.fromMap(map: user.data.data);
+                        // gets the last chat details for each chat
                         return StreamBuilder<QuerySnapshot>(
                           stream: Firestore.instance
                               .collection(FirebaseUtils.chat)
@@ -110,10 +123,21 @@ class _ChatPageState extends State<ChatPage> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.chat),
+        onPressed: () => pushDynamicScreen(
+          context,
+          screen: MaterialPageRoute(
+            builder: (context) => CreateGroupChat(),
+          ),
+          platformSpecific: true,
+          withNavBar: false,
+        ),
+      ),
     );
   }
+  /*  */
 
-// gets latest unread messages from the server
   /// use it to determine the count of unread messages
   /// Also gets the latest message and time of the chat
   Future<ChatData> getLatestData(QuerySnapshot snapshot, String chatId) async {
@@ -138,110 +162,5 @@ class _ChatPageState extends State<ChatPage> {
         lastMessage: lastMessage.text,
         time: DateFormat('h:mm a').format(lastMessage.createdAt),
         unreadMessages: count);
-  }
-}
-
-class ChatWidget extends StatelessWidget {
-  final UserProfile responderProfile;
-  final ChatData chatData;
-  final FirebaseUser user;
-  final String chatId;
-  ChatWidget({this.chatData, this.user, this.responderProfile, this.chatId});
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(left: 0.0, right: 12.0),
-      leading: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          CircleAvatar(
-            radius: 35.0,
-            child: CustomCircleAvatar(
-              size: 56.0,
-              profileURL: responderProfile.profileURL,
-            ),
-          ),
-          Positioned(
-            bottom: 6.0,
-            right: 6.0,
-            child: CircleAvatar(
-              radius: 6,
-              backgroundColor:
-                  responderProfile.online ? Colors.green : Colors.redAccent,
-            ),
-          )
-        ],
-      ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            responderProfile.name,
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Text(
-            chatData.time,
-            style: TextStyle(
-              color:
-                  chatData.unreadMessages > 0 ? Colors.green : Colors.black54,
-              fontSize: 14.0,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-      subtitle: Padding(
-        padding: EdgeInsets.only(top: chatData.unreadMessages > 0 ? 0.0 : 4.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                chatData.lastMessage,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black54,
-                ),
-              ),
-            ),
-            if (chatData.unreadMessages > 0)
-              Padding(
-                padding: EdgeInsets.only(right: 8.0, left: 16.0),
-                child: Badge(
-                  badgeColor: Colors.green,
-                  padding: EdgeInsets.all(6.0),
-                  badgeContent: Text(
-                    '${chatData.unreadMessages}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                  ),
-                ),
-              )
-          ],
-        ),
-      ),
-      onTap: () async {
-        // takes user to the admin chat page
-        pushDynamicScreen(
-          context,
-          screen: MaterialPageRoute(
-            builder: (context) => AdminChatPage(
-              chatId: chatId,
-              responderProfile: responderProfile,
-              adminId: user.uid,
-            ),
-          ),
-          platformSpecific: true,
-          withNavBar: false,
-        );
-      },
-    );
   }
 }
