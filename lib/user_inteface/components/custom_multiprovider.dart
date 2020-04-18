@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zion/model/app.dart';
+import 'package:zion/provider/createGroupProvider.dart';
 import 'package:zion/service/connectivity_service.dart';
 import 'package:zion/user_inteface/utils/dependency_injection.dart';
 
@@ -30,6 +31,7 @@ class _CustomMultiproviderState extends State<CustomMultiprovider> {
           create: (context) => SplashAppStatus(),
         ),
         ChangeNotifierProvider(create: (context) => _appModel),
+        ChangeNotifierProvider(create: (context) => CreateGroupProvider()),
         StreamProvider<bool>(
           initialData: false,
           create: (_) => _service.connectionStatusController.stream,

@@ -107,7 +107,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
             fit: BoxFit.cover,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
                   .collection(FirebaseUtils.chat)

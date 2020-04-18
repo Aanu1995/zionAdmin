@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:zion/controller/chat_streams.dart';
 import 'package:zion/model/app.dart';
 import 'package:zion/service/user_profile_service.dart';
 import 'package:zion/user_inteface/screens/chat/chat_page.dart';
@@ -10,14 +12,28 @@ import 'package:zion/user_inteface/screens/home/home_page.dart';
 import 'package:zion/user_inteface/screens/search/search_page.dart';
 import 'package:zion/user_inteface/screens/settings/settings_page.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
-
+class MyHomePage extends StatelessWidget {
+  final ChatStreams _chatStreams = ChatStreams();
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        StreamProvider<QuerySnapshot>(
+            create: (_) => _chatStreams.allChatsStream)
+      ],
+      child: DefaultPage(),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class DefaultPage extends StatefulWidget {
+  DefaultPage({Key key}) : super(key: key);
+
+  @override
+  _DefaultPageState createState() => _DefaultPageState();
+}
+
+class _DefaultPageState extends State<DefaultPage> {
   PersistentTabController _controller;
   // initial index for the bottom nav bar
   // the default is 0
@@ -98,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return PersistentTabView(
       controller: _controller,
       items: _navBarsItems(),
+
       // displays the current screen based on the index
       // selected in the bottom navigation bar
       screens: <Widget>[
@@ -107,15 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
         SettingsPage(),
       ],
       showElevation: true,
-      navBarCurve: NavBarCurve.none,
+      navBarCurve: NavBarCurve.upperCorners,
       backgroundColor: appContext.bottomAppBarColor,
       iconSize: 26.0,
 
       // Choose the nav bar style with this property
       navBarStyle: NavBarStyle.style6,
-      onItemSelected: (index) {
-        print(index);
-      },
+      onItemSelected: (index) {},
     );
   }
 }

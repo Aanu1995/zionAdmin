@@ -68,9 +68,12 @@ class ChatInputToolbar extends StatelessWidget {
                       null,
                   decoration: InputDecoration(
                     prefixIcon: leading,
+                    fillColor: Colors.white,
+                    filled: true,
                     contentPadding: EdgeInsets.only(
-                        left: 10.0, top: 2.0, bottom: 2.0, right: 10.0),
+                        left: 10.0, top: 8.0, bottom: 8.0, right: 10.0),
                     border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     hintText: "Type a message",
@@ -87,8 +90,13 @@ class ChatInputToolbar extends StatelessWidget {
               SizedBox(width: 8.0),
               InkWell(
                 child: CircleAvatar(
+                  radius: 25.0,
                   backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(Icons.send, color: Colors.white),
+                  child: Icon(
+                    Icons.send,
+                    color: Colors.white,
+                    size: 26.0,
+                  ),
                 ),
                 onTap: text.length != 0
                     ? () async {

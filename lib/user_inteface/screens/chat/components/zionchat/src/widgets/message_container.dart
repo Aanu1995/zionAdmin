@@ -48,7 +48,7 @@ class MessageContainer extends StatelessWidget {
     final nameColor = color[random.nextInt(7)];
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
+        maxWidth: MediaQuery.of(context).size.width * 1,
       ),
       child: Padding(
         padding: EdgeInsets.only(top: 12),

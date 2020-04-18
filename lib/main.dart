@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:zion/controller/chat_streams.dart';
 import 'package:zion/model/app.dart';
 import 'package:zion/router/router.dart';
 import 'package:zion/user_inteface/components/custom_multiprovider.dart';
@@ -30,7 +28,6 @@ class _MyAppState extends State<MyApp> {
   // by default the user has not been authenticated
   // user will be taken to login screen
   Widget page = LoginPage();
-  ChatStreams _chatStreams = ChatStreams();
 
   @override
   void initState() {
@@ -92,13 +89,7 @@ class _MyAppState extends State<MyApp> {
                     ? ThemeUtils.buildDarkTheme()
                     : ThemeUtils.buildLightTheme(),
                 debugShowCheckedModeBanner: false,
-                home: MultiProvider(
-                  providers: [
-                    StreamProvider<QuerySnapshot>(
-                        create: (_) => _chatStreams.allChatsStream)
-                  ],
-                  child: page,
-                ),
+                home: page,
                 routes:
                     Routes.getroutes, // defines the routes of the application
               );
