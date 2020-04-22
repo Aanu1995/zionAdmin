@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
@@ -10,8 +9,8 @@ import 'package:zion/user_inteface/utils/firebase_utils.dart';
 
 class SearchChat extends SearchDelegate {
   final List chats;
-  final FirebaseUser admin;
-  SearchChat({this.chats, this.admin});
+  final UserProfile userProfile;
+  SearchChat({this.chats, this.userProfile});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -64,7 +63,7 @@ class SearchChat extends SearchDelegate {
               return responserProfile.name.contains(query)
                   ? StreamBuilder<QuerySnapshot>(
                       stream: Firestore.instance
-                          .collection(FirebaseUtils.chat)
+                          .collection(FirebaseUtils.chats)
                           .document(chatId)
                           .collection(FirebaseUtils.admin)
                           .orderBy('createdAt', descending: true)
@@ -81,14 +80,14 @@ class SearchChat extends SearchDelegate {
                               if (chatData.hasData) {
                                 return ChatWidget(
                                   chatData: chatData.data,
-                                  user: admin,
+                                  user: userProfile,
                                   responderProfile: responserProfile,
                                   chatId: chatId,
                                 );
                               }
                               return ChatWidget(
                                 chatData: ChatData(),
-                                user: admin,
+                                user: userProfile,
                                 responderProfile: responserProfile,
                                 chatId: chatId,
                               );
@@ -97,7 +96,7 @@ class SearchChat extends SearchDelegate {
                         }
                         return ChatWidget(
                           chatData: ChatData(),
-                          user: admin,
+                          user: userProfile,
                           responderProfile: responserProfile,
                           chatId: chatId,
                         );
@@ -119,11 +118,11 @@ class SearchChat extends SearchDelegate {
     final messages = snapshot.documents;
     ChatMessage lastMessage = ChatMessage.fromJson(messages[0].data);
     final document = await Firestore.instance
-        .collection(FirebaseUtils.chat)
+        .collection(FirebaseUtils.chats)
         .document(chatId)
         .get();
     final userLastSeenTime =
-        document.data[admin.uid] + 5000; // delay of 5 seconds
+        document.data[userProfile.id] + 5000; // delay of 5 seconds
     if (userLastSeenTime != null) {
       messages.forEach((mess) {
         int messTime = int.parse(mess.documentID);

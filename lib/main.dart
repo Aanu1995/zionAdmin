@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zion/model/app.dart';
 import 'package:zion/router/router.dart';
@@ -9,13 +11,20 @@ import 'package:zion/user_inteface/components/custom_multiprovider.dart';
 import 'package:zion/user_inteface/screens/authentication/login_page.dart';
 import 'package:zion/user_inteface/screens/my_home_page.dart';
 import 'package:zion/user_inteface/screens/splash_page.dart';
+import 'package:zion/user_inteface/utils/device_scale/flutter_scale_aware.dart';
 import 'package:zion/user_inteface/utils/global_data_utils.dart';
 import 'package:zion/user_inteface/utils/theme_utils.dart';
 
 // our application starts running here
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await init();
   runApp(CustomMultiprovider(child: MyApp()));
+}
+
+init() async {
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  Hive..init(appDocumentDir.path);
 }
 
 class MyApp extends StatefulWidget {
@@ -83,15 +92,18 @@ class _MyAppState extends State<MyApp> {
         } else {
           return Consumer<AppModel>(
             builder: (context, app, _) {
-              return MaterialApp(
-                title: 'Zion Auto Diagnosis',
-                theme: app.darkTheme
-                    ? ThemeUtils.buildDarkTheme()
-                    : ThemeUtils.buildLightTheme(),
-                debugShowCheckedModeBanner: false,
-                home: page,
-                routes:
-                    Routes.getroutes, // defines the routes of the application
+              return ScaleAware(
+                config: ScaleConfig(),
+                child: MaterialApp(
+                  title: 'Zion Auto Diagnosis',
+                  theme: app.darkTheme
+                      ? ThemeUtils.buildDarkTheme()
+                      : ThemeUtils.buildLightTheme(),
+                  debugShowCheckedModeBanner: false,
+                  home: page,
+                  routes:
+                      Routes.getroutes, // defines the routes of the application
+                ),
               );
             },
           );

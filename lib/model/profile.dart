@@ -10,6 +10,7 @@ class UserProfile extends Equatable {
   final String address;
   final String notificationId;
   final bool online;
+  final String id;
   final DateTime lastActive;
 
   UserProfile({
@@ -18,12 +19,13 @@ class UserProfile extends Equatable {
     this.profileURL,
     this.phoneNumber,
     this.address,
+    this.id,
     this.online = false,
     this.lastActive,
     this.notificationId,
   });
 
-  factory UserProfile.fromMap({@required Map<String, dynamic> map}) {
+  factory UserProfile.fromMap({@required map}) {
     DateTime dateTime;
     if (map['lastActive'] != null) {
       dateTime = DateTime.fromMillisecondsSinceEpoch(map['lastActive']);
@@ -34,14 +36,15 @@ class UserProfile extends Equatable {
       profileURL: map['profileURL'] ?? '',
       phoneNumber: map['phone'] ?? '',
       address: map['address'] ?? '',
-      online: map['online'],
+      online: map['online'] ?? false,
+      id: map['id'] ?? '',
       lastActive: dateTime ?? DateTime.now(),
       notificationId: map['notificationId'],
     );
   }
 
   static Future<Map<String, dynamic>> toMap(
-      {@required UserProfile user}) async {
+      {@required UserProfile user, String id}) async {
     // playerId (One signal notification)
     final playerId = await PushNotificationService.getPlayerId();
     return {
@@ -51,6 +54,7 @@ class UserProfile extends Equatable {
       'phone': user.phoneNumber ?? '',
       'address': user.address ?? '',
       'online': user.online,
+      'id': id,
       'notificationId': playerId ?? ''
     };
   }

@@ -46,7 +46,8 @@ class CustomButtomSheets {
   }
 
   // bottom sheets to display options to get images to user
-  static Future<int> imagePickerOptions(BuildContext context) async {
+  static Future<int> imagePickerOptions(BuildContext context,
+      {bool showDelete = true, String title}) async {
     int index;
     await showModalBottomSheet(
       context: context,
@@ -58,7 +59,7 @@ class CustomButtomSheets {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Profile Photo',
+                  title ?? 'Profile Photo',
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w500,
@@ -69,14 +70,15 @@ class CustomButtomSheets {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // remove button button
-                    OptionAvartar(
-                        text: "Remove photo",
-                        icon: Icons.delete,
-                        backgroundColor: Colors.orange[800],
-                        onTap: () {
-                          index = 1;
-                          Navigator.pop(context);
-                        }),
+                    if (showDelete)
+                      OptionAvartar(
+                          text: "Remove photo",
+                          icon: Icons.delete,
+                          backgroundColor: Colors.orange[800],
+                          onTap: () {
+                            index = 1;
+                            Navigator.pop(context);
+                          }),
                     // pick from gallery button
                     OptionAvartar(
                         text: "Gallery",
@@ -88,13 +90,14 @@ class CustomButtomSheets {
                         }),
                     // use camera button
                     OptionAvartar(
-                        text: "Camera",
-                        icon: Icons.camera_alt,
-                        backgroundColor: Colors.green,
-                        onTap: () {
-                          index = 3;
-                          Navigator.pop(context);
-                        })
+                      text: "Camera",
+                      icon: Icons.camera_alt,
+                      backgroundColor: Colors.green,
+                      onTap: () {
+                        index = 3;
+                        Navigator.pop(context);
+                      },
+                    )
                   ],
                 ),
               ],

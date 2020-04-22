@@ -4,4 +4,5 @@ class GlobalDataUtils {
 
   // this is data for key (local storage) using shared preferences
   static const darkTheme = "darkTheme";
+  static const zion = 'zion'; // table name for local storage
 }

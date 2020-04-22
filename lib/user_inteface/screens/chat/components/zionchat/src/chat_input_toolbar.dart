@@ -68,7 +68,7 @@ class ChatInputToolbar extends StatelessWidget {
                       null,
                   decoration: InputDecoration(
                     prefixIcon: leading,
-                    fillColor: Colors.white,
+                    fillColor: Colors.white70,
                     filled: true,
                     contentPadding: EdgeInsets.only(
                         left: 10.0, top: 8.0, bottom: 8.0, right: 10.0),

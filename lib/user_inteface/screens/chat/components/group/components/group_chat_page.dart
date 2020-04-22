@@ -1,75 +1,53 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
 import 'package:zion/service/chat_service.dart';
 import 'package:zion/user_inteface/components/empty_space.dart';
-import 'package:zion/user_inteface/screens/chat/components/zion_chat.dart';
+import 'package:zion/user_inteface/screens/chat/components/group/components/zion_group_chat.dart';
 import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
 import 'package:zion/user_inteface/screens/settings/components/components.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:zion/user_inteface/utils/imageUtils.dart';
 
-class AdminChatPage extends StatefulWidget {
-  final String chatId;
-  final UserProfile responderProfile;
-  final String adminId;
-  AdminChatPage({
-    this.chatId,
-    this.responderProfile,
-    this.adminId,
+class GroupChatPage extends StatelessWidget {
+  final Group group;
+  final UserProfile user;
+
+  GroupChatPage({
+    this.user,
+    this.group,
   });
 
-  @override
-  _AdminChatPageState createState() => _AdminChatPageState();
-}
-
-class _AdminChatPageState extends State<AdminChatPage> {
   final GlobalKey<ZionMessageChatState> _chatViewKey =
       GlobalKey<ZionMessageChatState>();
-
-  String lastActive;
-
-  @override
-  void initState() {
-    super.initState();
-    final result =
-        DateTime.now().difference(widget.responderProfile.lastActive);
-    lastActive = timeago.format(DateTime.now().subtract(result));
-  }
 
   Widget userTyping() {
     return StreamBuilder<DocumentSnapshot>(
       stream: Firestore.instance
           .collection('Typing')
-          .document(widget.chatId)
+          .document(group.id)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          String isTyping = snapshot.data.data['typing'];
-          if (isTyping != null &&
-              isTyping.isNotEmpty &&
-              isTyping != widget.adminId) {
+        if (!snapshot.hasData || snapshot.data.data == null) {
+          return Offstage();
+        } else {
+          String membername = snapshot.data.data['typing'];
+          if (membername != null &&
+              membername.isNotEmpty &&
+              membername != user.name) {
             return Text(
-              'Typing',
+              '$membername is typing',
               style: GoogleFonts.abel(
                 fontWeight: FontWeight.bold,
-                fontSize: 12.0,
+                color: Colors.white,
+                fontSize: 14.0,
               ),
             );
           }
         }
-        return Text(
-          widget.responderProfile.online ? 'Online' : 'Last seen: $lastActive',
-          style: GoogleFonts.abel(
-            fontWeight: FontWeight.bold,
-            fontSize: 12.0,
-          ),
-        );
+        return Offstage();
       },
     );
   }
@@ -82,7 +60,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
           children: [
             CustomCircleAvatar(
               size: 40.0,
-              profileURL: widget.responderProfile.profileURL,
+              profileURL: group.groupIcon,
             ),
             EmptySpace(horizontal: true, multiple: 1.5),
             Column(
@@ -90,7 +68,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.responderProfile.name,
+                  group.name,
                   style: GoogleFonts.abel(fontWeight: FontWeight.bold),
                 ),
                 userTyping(),
@@ -111,8 +89,8 @@ class _AdminChatPageState extends State<AdminChatPage> {
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
                   .collection(FirebaseUtils.chats)
-                  .document(widget.chatId)
-                  .collection(FirebaseUtils.admin)
+                  .document(group.id)
+                  .collection(FirebaseUtils.messages)
                   .orderBy('createdAt', descending: true)
                   .limit(20)
                   .snapshots(),
@@ -123,17 +101,15 @@ class _AdminChatPageState extends State<AdminChatPage> {
                   List<DocumentSnapshot> items = snapshot.data.documents;
                   final messages =
                       items.map((i) => ChatMessage.fromJson(i.data)).toList();
-                  // send last seen of the user in the chat to the server
-                  ChatServcice.updateLastSeen(
-                      adminId: widget.adminId, documentId: widget.chatId);
-                  return ZionChat(
+                  // update user last seen
+                  ChatServcice.updateGroupCheckMessageTime(user.id, group.id);
+                  return ZionGroupChat(
                     chatKey: _chatViewKey,
                     messages: messages,
-                    chatId: widget.chatId,
-                    online: widget.responderProfile.online,
+                    group: group,
                     lastDocumentSnapshot:
                         items.length != 0 ? items[items.length - 1] : null,
-                    user: ChatUser(uid: widget.adminId),
+                    user: ChatUser(uid: user.id, name: user.name),
                   );
                 }
                 return Container();
@@ -143,18 +119,5 @@ class _AdminChatPageState extends State<AdminChatPage> {
         ],
       ),
     );
-  }
-
-// send images picked during chat to the server
-  void onImagePicked() async {
-    File result = await ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
-    if (result != null) {
-      ChatServcice.sendImage(
-        file: result,
-        user: ChatUser(uid: widget.adminId),
-        chatId: widget.chatId,
-      );
-    }
   }
 }

@@ -12,7 +12,8 @@ class UserWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0)
+            .add(const EdgeInsets.only(top: 16.0)),
         child: Row(
           children: <Widget>[
             SizedBox.fromSize(
@@ -21,8 +22,9 @@ class UserWidget extends StatelessWidget {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 29.0,
+                    backgroundColor: Colors.grey,
                     child: CustomCircleAvatar(
-                      size: 58.0,
+                      size: 70.0,
                       profileURL: userProfile.profileURL,
                     ),
                   ),

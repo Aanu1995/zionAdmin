@@ -30,7 +30,7 @@ class ConnectivityService {
         status = false;
         break;
     }
-    if (status) UserProfileService.setAdminOnline();
+    if (status) UserProfileService.setUserOnline();
     return status;
   }
 }

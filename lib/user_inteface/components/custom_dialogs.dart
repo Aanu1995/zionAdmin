@@ -89,61 +89,46 @@ class CustomDialogs {
 
 // show the dialog for circularprogress indicator
   static showProgressDialog(BuildContext context) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (
-            BuildContext context,
-            _,
-            __,
-          ) {
-            return ProgressDialog();
-          }),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Center(
+          child: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.all(30.0),
+              height: 80.0,
+              child: Card(
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      strokeWidth: 3.0,
+                    ),
+                    SizedBox(
+                      width: 24.0,
+                    ),
+                    Text(
+                      "Creating Group...",
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
 // close the dialog for circularprogress indicator
   static closeProgressDialog(BuildContext context) {
     Navigator.of(context).pop();
-  }
-}
-
-// closing dialog class
-class ProgressDialog extends StatelessWidget {
-  const ProgressDialog({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black.withAlpha(200),
-      child: Center(
-        child: Container(
-          padding: EdgeInsets.all(30.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                Text(
-                  "Please wait....",
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

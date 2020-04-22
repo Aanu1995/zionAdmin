@@ -149,7 +149,7 @@ class UserProfileService {
     }
   }
 
-  static setAdminOnline() async {
+  static setUserOnline() async {
     try {
       // gets userid
       final user = await FirebaseUtils.auth.currentUser();
@@ -157,7 +157,9 @@ class UserProfileService {
         await FirebaseUtils.firestore
             .collection(FirebaseUtils.admin)
             .document(user.uid)
-            .updateData({'online': true});
+            .updateData({
+          'online': true,
+        });
       }
     } catch (e) {
       print(e);

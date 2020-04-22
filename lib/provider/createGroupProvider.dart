@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:zion/model/profile.dart';
 
 class CreateGroupProvider with ChangeNotifier {
-  List<UserProfile> groupParticipantList = [];
-
+  List<UserProfile> _groupParticipantList = [];
+  List<UserProfile> get getList => _groupParticipantList;
   // add participants to the group
   addParticipant(UserProfile profile) {
-    print('tapped');
-    if (!groupParticipantList.contains(profile)) {
-      groupParticipantList.add(profile);
+    if (_groupParticipantList.contains(profile)) {
+      _groupParticipantList.remove(profile);
     } else {
-      groupParticipantList.remove(profile);
+      _groupParticipantList.add(profile);
     }
     notifyListeners();
   }
 
   // checks if partcipant has been handle
   bool checkAddedStatus(UserProfile profile) {
-    if (groupParticipantList.contains(profile)) {
+    if (_groupParticipantList.contains(profile)) {
       return true;
     } else {
       return false;
@@ -25,6 +24,6 @@ class CreateGroupProvider with ChangeNotifier {
   }
 
   void emptyList() {
-    groupParticipantList.clear();
+    _groupParticipantList.clear();
   }
 }

@@ -6,6 +6,7 @@ import 'package:zion/service/user_profile_service.dart';
 import 'package:zion/user_inteface/components/empty_space.dart';
 import 'package:zion/user_inteface/utils/dependency_injection.dart';
 import 'package:zion/user_inteface/utils/imageUtils.dart';
+import 'package:zion/user_inteface/utils/device_scale/flutter_scale_aware.dart';
 
 // Stream widget that gets stream from backend to the screen
 class ProfileStreamData extends StatefulWidget {
@@ -102,8 +103,8 @@ class CustomCircleAvatar extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: SizedBox(
-                  height: size,
-                  width: size,
+                  height: context.scale(size),
+                  width: context.scale(size),
                   child: profileURL.isEmpty
                       ? Image.asset(ImageUtils.defaultProfile)
                       : CachedNetworkImage(imageUrl: profileURL)),
@@ -117,8 +118,8 @@ class CustomCircleAvatar extends StatelessWidget {
                 child: Container(
                   color: Colors.white,
                   child: SizedBox(
-                    height: 150.0,
-                    width: 150.0,
+                    height: context.scale(150.0),
+                    width: context.scale(150.0),
                     child: profileURL.isEmpty
                         ? Image.asset(ImageUtils.defaultProfile)
                         : CachedNetworkImage(imageUrl: profileURL),

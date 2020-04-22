@@ -22,30 +22,19 @@ class MessageContainer extends StatelessWidget {
 
   /// A flag which is used for assiging styles
   final bool isUser;
+  final Color fromColor;
 
   const MessageContainer({
     @required this.message,
     @required this.timeFormat,
+    @required this.fromColor,
     this.messageImageBuilder,
     this.parsePatterns = const <MatchText>[],
     this.isUser,
   });
 
-  static var random = new Random();
-
-  static List<Color> color = [
-    Colors.red,
-    Colors.blue,
-    Colors.orange,
-    Colors.purple,
-    Colors.green,
-    Colors.indigo,
-    Colors.pink,
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final nameColor = color[random.nextInt(7)];
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 1,
@@ -76,13 +65,15 @@ class MessageContainer extends StatelessWidget {
                 children: <Widget>[
                   if (message.user.name != null && !isUser)
                     Container(
-                      margin: EdgeInsets.only(bottom: 8.0),
+                      margin:
+                          EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
                       child: Text(
                         message.user.name,
+                        textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 13.0,
+                          fontSize: 15.0,
                           fontWeight: FontWeight.w500,
-                          color: nameColor,
+                          color: fromColor,
                         ),
                       ),
                     ),

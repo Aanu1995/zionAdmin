@@ -57,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 radius: 35.0,
                                 backgroundColor: Colors.white,
                                 child: CustomCircleAvatar(
-                                  size: 70.0,
+                                  size: 80.0,
                                   profileURL: userProfile.profileURL,
                                 ),
                               ),

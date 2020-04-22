@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -12,7 +11,7 @@ import 'package:zion/user_inteface/screens/settings/components/components.dart';
 class ChatWidget extends StatelessWidget {
   final UserProfile responderProfile;
   final ChatData chatData;
-  final FirebaseUser user;
+  final UserProfile user;
   final String chatId;
   ChatWidget({this.chatData, this.user, this.responderProfile, this.chatId});
 
@@ -24,7 +23,7 @@ class ChatWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           String isTyping = snapshot.data.data['typing'];
-          if (isTyping != null && isTyping.isNotEmpty && isTyping != user.uid) {
+          if (isTyping != null && isTyping.isNotEmpty && isTyping != user.id) {
             return Text(
               'Typing',
               style: GoogleFonts.abel(
@@ -59,8 +58,9 @@ class ChatWidget extends StatelessWidget {
         children: <Widget>[
           CircleAvatar(
             radius: 35.0,
+            backgroundColor: Colors.grey,
             child: CustomCircleAvatar(
-              size: 56.0,
+              size: 67.0,
               profileURL: responderProfile.profileURL,
             ),
           ),
@@ -128,7 +128,7 @@ class ChatWidget extends StatelessWidget {
             builder: (context) => AdminChatPage(
               chatId: chatId,
               responderProfile: responderProfile,
-              adminId: user.uid,
+              adminId: user.id,
             ),
           ),
           platformSpecific: true,

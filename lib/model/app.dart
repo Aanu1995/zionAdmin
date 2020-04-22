@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 import 'package:zion/user_inteface/utils/global_data_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -11,8 +11,8 @@ class AppModel with ChangeNotifier {
 
   void getConfig() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      _darkTheme = prefs.getBool(GlobalDataUtils.darkTheme) ?? false;
+      var box = await Hive.openBox(GlobalDataUtils.zion);
+      _darkTheme = box.get(GlobalDataUtils.darkTheme) ?? false;
     } catch (e) {
       print(e);
     }
@@ -22,10 +22,10 @@ class AppModel with ChangeNotifier {
 
   Future<void> updateTheme(bool theme) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var box = await Hive.openBox(GlobalDataUtils.zion);
       _darkTheme = theme;
       notifyListeners();
-      await prefs.setBool(GlobalDataUtils.darkTheme, theme);
+      await box.put(GlobalDataUtils.darkTheme, theme);
     } catch (error) {
       print("theme could not be changed");
     }

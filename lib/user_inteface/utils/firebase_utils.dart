@@ -14,12 +14,16 @@ class FirebaseUtils {
   static String get profileURL => 'profileURL';
   static String get phone => 'phone';
   static String get address => 'address';
+  static String get group => 'group';
+  static String get groups => 'groups';
+  static String get oneone => 'oneone';
+  static String get messages => 'messages';
 
   // collections and documents for notification
   static String get notification => 'notification';
 
   // documents and collections (firebase) for chats
-  static String get chat => "chat";
+  static String get chats => "chats";
   static String get user => 'user';
 
   // this returns string result to data submitted to backend
