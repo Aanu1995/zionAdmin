@@ -1,7 +1,5 @@
-import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:zion/model/chat.dart';
@@ -37,11 +35,15 @@ class GroupChatWidget extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              group.name,
-              style: TextStyle(
-                fontSize: 17.0,
-                fontWeight: FontWeight.w500,
+            Expanded(
+              child: Text(
+                group.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             Text(
@@ -59,14 +61,10 @@ class GroupChatWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              UserTyping(
-                group: group,
-                user: user,
+              Expanded(
+                child: UserTyping(user: user, group: group),
               ),
-              UnreadMessages(
-                group: group,
-                user: user,
-              )
+              UnreadMessages(user: user, group: group),
             ],
           ),
         ),
@@ -103,60 +101,17 @@ class UserTyping extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data.data == null) {
-          return Expanded(
-            child: RichText(
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: (group.fromName != user.name && group.fromName != '')
-                        ? '${group.fromName}: '
-                        : '',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '${group.message}',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else {
-          String membername = snapshot.data.data['typing'];
-          if (membername != null &&
-              membername.isNotEmpty &&
-              membername != user.id) {
-            return Text(
-              '$membername: is typing',
-              style: GoogleFonts.abel(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-                fontSize: 14.0,
-              ),
-            );
-          }
-        }
-        return Expanded(
-          child: RichText(
+          return RichText(
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: (group.fromName != user.name && group.fromName != null)
+                  text: (group.fromName != user.name && group.fromName != '')
                       ? '${group.fromName}: '
                       : '',
                   style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: 15.0,
                     color: Colors.black54,
                     fontWeight: FontWeight.bold,
                   ),
@@ -170,6 +125,44 @@ class UserTyping extends StatelessWidget {
                 ),
               ],
             ),
+          );
+        } else {
+          String membername = snapshot.data.data['typing'];
+          if (membername != null &&
+              membername.isNotEmpty &&
+              membername != user.id) {
+            return Text(
+              '$membername: is typing',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 15.0,
+              ),
+            );
+          }
+        }
+        return RichText(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: (group.fromName != user.name && group.fromName != null)
+                    ? '${group.fromName}: '
+                    : '',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: '${group.message}',
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -219,14 +212,18 @@ class UnreadMessages extends StatelessWidget {
 
                   return unreadMessages == 0
                       ? Offstage()
-                      : Badge(
-                          badgeColor: Colors.green,
-                          padding: EdgeInsets.all(6.0),
-                          badgeContent: Text(
-                            '$unreadMessages',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
+                      : CircleAvatar(
+                          backgroundColor: Colors.green,
+                          radius: 10.5,
+                          child: FittedBox(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                "$unreadMessages",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         );

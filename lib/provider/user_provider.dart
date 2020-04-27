@@ -10,14 +10,20 @@ class UserProvider {
   UserProfile _userProfile;
 
   UserProvider() {
+    getDefaultData();
     getUserData();
+  }
+
+  void getDefaultData() async {
+    var box = await Hive.openBox(GlobalDataUtils.zion);
+    _userProfile = UserProfile.fromMap(map: await box.get('user'));
   }
 
   void getUserData() async {
     var box = await Hive.openBox(GlobalDataUtils.zion);
     bool connection = await DataConnectionChecker().hasConnection;
     if (!connection) {
-      _userProfile = UserProfile.fromMap(map: await box.get('user'));
+      return;
     }
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final doc = await Firestore.instance

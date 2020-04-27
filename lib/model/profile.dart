@@ -25,7 +25,7 @@ class UserProfile extends Equatable {
     this.notificationId,
   });
 
-  factory UserProfile.fromMap({@required map}) {
+  factory UserProfile.fromMap({@required Map map}) {
     DateTime dateTime;
     if (map['lastActive'] != null) {
       dateTime = DateTime.fromMillisecondsSinceEpoch(map['lastActive']);

@@ -8,25 +8,27 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:zion/model/chat.dart';
 import 'package:zion/service/chat_service.dart';
 import 'package:zion/user_inteface/screens/chat/components/full_image.dart';
-import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
 import 'package:zion/user_inteface/screens/chat/components/image_pick_preview_page.dart';
+import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
+import 'package:zion/user_inteface/utils/firebase_utils.dart';
 
 class ZionChat extends StatefulWidget {
   final chatKey;
+  final ChatModel oneone;
   List<ChatMessage> messages;
   final ChatUser user;
-  final bool online;
+  final isResponderOnline;
   DocumentSnapshot lastDocumentSnapshot;
-  final chatId;
 
   ZionChat(
       {this.chatKey,
+      this.oneone,
       this.messages,
       this.user,
-      this.chatId,
-      this.online,
+      this.isResponderOnline,
       this.lastDocumentSnapshot});
 
   @override
@@ -41,23 +43,26 @@ class _ZionChatState extends State<ZionChat> {
   List<ChatMessage> falseMessages = [];
   final focusNode = FocusNode();
 
+  KeyboardVisibilityNotification _keyboard = KeyboardVisibilityNotification();
+  int id;
+
   @override
   void initState() {
     super.initState();
     // checks if user is typing
     // send notification to the server if typing
     // and stop typing
-    KeyboardVisibilityNotification().addNewListener(
+    id = _keyboard.addNewListener(
       onChange: (bool visible) async {
         bool connect = await DataConnectionChecker().hasConnection;
         if (connect) {
           if (visible) {
             ChatServcice.isTyping(
-              widget.chatId,
-              username: widget.user.name,
+              widget.oneone.id,
+              username: widget.user.uid,
             );
           } else {
-            ChatServcice.isTyping(widget.chatId);
+            ChatServcice.isTyping(widget.oneone.id);
           }
         }
       },
@@ -65,21 +70,42 @@ class _ZionChatState extends State<ZionChat> {
   }
 
   @override
+  void dispose() {
+    _keyboard.removeListener(id);
+    _keyboard.dispose();
+    super.dispose();
+  }
+
+  void updateMessageStatus() async {
+    final onData = await Firestore.instance
+        .collection(FirebaseUtils.chats)
+        .document(widget.oneone.id)
+        .collection(FirebaseUtils.messages)
+        .where('messageStatus', isLessThan: 2)
+        .getDocuments();
+
+    onData.documents.forEach((data) {
+      final List<String> list = [];
+      final user = data.data['user']['uid'];
+      if (user != widget.user.uid) {
+        list.add(data.documentID);
+      }
+      if (list.length > 0) {
+        ChatServcice.updateMessageStatus(
+          chatId: widget.oneone.id,
+          messagesId: list,
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     messages = [...falseMessages, ...widget.messages];
     // checks if the messages has been seen
-    messages.forEach((chat) {
-      if (chat.messageStatus >= 0 && chat.user.uid != widget.user.uid) {
-        if (chat.messageStatus != 2) {
-          ChatServcice.updateMessageStatus(
-            chatId: widget.chatId,
-            status: 2,
-            documentId: chat.documentId,
-          );
-        }
-      }
-    });
-    print(messages.length);
+    updateMessageStatus();
+    // empty the false messages
+    falseMessages.clear();
     return ZionMessageChat(
       key: widget.chatKey,
       onSend: onSend,
@@ -87,7 +113,7 @@ class _ZionChatState extends State<ZionChat> {
       focusNode: focusNode,
       inputDecoration: InputDecoration.collapsed(hintText: "Type a message"),
       timeFormat: DateFormat('h:mm a'),
-      messages: widget.messages,
+      messages: messages,
       inputMaxLines: 6,
       alwaysShowSend: true,
       messageImageBuilder: (image, file) {
@@ -142,10 +168,12 @@ class _ZionChatState extends State<ZionChat> {
 
 // send chat messages (text)
   void onSend(final message) {
-    final mess = message;
-    mess.messageStatus =
-        widget.online ? 1 : 0; // checks whether messages will be delivered
-    ChatServcice.sendMessage(message: mess, chatId: widget.chatId);
+    ChatMessage myMessage = message;
+    myMessage.messageStatus = widget.isResponderOnline ? 1 : 0;
+    ChatServcice.sendMessage(
+      message: myMessage,
+      chatId: widget.oneone.id,
+    );
   }
 
 // send chat images to the server
@@ -171,11 +199,9 @@ class _ZionChatState extends State<ZionChat> {
           file: result,
           text: text,
           user: widget.user,
-          chatId: widget.chatId,
-          status: widget.online ? 1 : 0,
+          chatId: widget.oneone.id,
+          status: widget.isResponderOnline ? 1 : 0,
         );
-        // empty the false messages
-        falseMessages.clear();
       }
     }
   }
@@ -187,7 +213,7 @@ class _ZionChatState extends State<ZionChat> {
       setState(() {});
     });
     List<DocumentSnapshot> result = await ChatServcice.loadMoreMessages(
-        widget.chatId, widget.lastDocumentSnapshot);
+        widget.oneone.id, widget.lastDocumentSnapshot);
     if (result.isNotEmpty) {
       widget.lastDocumentSnapshot = result[result.length - 1];
       final newMessages =

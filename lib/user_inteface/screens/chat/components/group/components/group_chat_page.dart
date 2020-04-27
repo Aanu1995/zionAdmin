@@ -76,6 +76,12 @@ class GroupChatPage extends StatelessWidget {
             )
           ],
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Stack(
         fit: StackFit.expand,

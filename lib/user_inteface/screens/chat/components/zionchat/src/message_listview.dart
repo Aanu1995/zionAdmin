@@ -21,7 +21,6 @@ class MessageListView extends StatefulWidget {
   final bool isLoadingMore;
   final Function onLoadEarlier;
   final Function(bool) defaultLoadCallback;
-  final Color fromColor;
 
   MessageListView({
     this.isLoadingMore,
@@ -35,7 +34,6 @@ class MessageListView extends StatefulWidget {
     this.messages,
     this.user,
     this.dateFormat,
-    @required this.fromColor,
     this.timeFormat,
     this.onLongPressMessage,
     this.changeVisible,
@@ -174,7 +172,6 @@ class _MessageListViewState extends State<MessageListView> {
                                 messageImageBuilder: widget.messageImageBuilder,
                                 timeFormat: widget.timeFormat,
                                 parsePatterns: widget.parsePatterns,
-                                fromColor: widget.fromColor,
                               ),
                             ),
                             SizedBox(

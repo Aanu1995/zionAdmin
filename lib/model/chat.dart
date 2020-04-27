@@ -1,59 +1,57 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zion/user_inteface/utils/firebase_utils.dart';
 
 class ChatModel {
+  final String id;
+  final String userId;
+  final String adminId;
+  final String chatType;
   final String message;
-  final String time;
-  final bool isUser;
-  final DateTime dateTime;
   final String image;
-  final String audio;
+  final int time;
+  final String fromId;
+  final String fromName;
 
   ChatModel({
+    this.id,
+    this.userId,
+    this.adminId,
+    this.fromName,
+    this.chatType,
     this.message,
-    this.time,
-    this.isUser = false,
-    this.dateTime,
-    this.audio,
     this.image,
+    this.time,
+    this.fromId,
   });
 
-  factory ChatModel.fromMap({Map<String, dynamic> map}) {
-    DateTime date =
-        new DateTime.fromMillisecondsSinceEpoch(map['time'].seconds * 1000);
-    var format = DateFormat.jm();
-    var correctDate = format.format(date);
+  factory ChatModel.fromMap({
+    Map<String, dynamic> map,
+    Members members,
+  }) {
     return ChatModel(
-      message: map["message"] ?? "",
-      image: map["image"] ?? "",
-      audio: map["audio"] ?? "",
-      time: correctDate,
-      isUser: map['isUser'] ?? false,
-      dateTime: date,
+      id: map['id'],
+      userId: map['userId'],
+      adminId: map['adminId'],
+      chatType: map['chat_type'],
+      message: map['message'] ?? '',
+      image: map['image'] ?? '',
+      fromId: map['from_id'] ?? '',
+      time: map['time'],
+      fromName: map['from_name'],
     );
   }
 
-  factory ChatModel.fromDocumentSnapshot({DocumentSnapshot documentSnapshot}) {
-    Map<String, dynamic> map = documentSnapshot.data;
-    return ChatModel.fromMap(map: map);
-  }
-
-  static List<ChatModel> fromQuerySnapshot({QuerySnapshot querySnapshot}) {
-    List<DocumentSnapshot> documents = querySnapshot.documents;
-    List<ChatModel> list = documents
-        .map((f) => ChatModel.fromDocumentSnapshot(documentSnapshot: f))
-        .toList();
-    return list;
-  }
-
-  static Map<String, dynamic> toMap({ChatModel chat}) {
+  static Map<String, dynamic> toMap({ChatModel chatModel}) {
     return {
-      'message': chat.message ?? '',
-      'image': chat.image ?? '',
-      'audio': chat.audio ?? '',
-      'isUser': chat.isUser,
-      'time': Timestamp.now(),
+      'id': chatModel.id,
+      'userId': chatModel.userId,
+      'adminId': chatModel.adminId,
+      'chat_type': FirebaseUtils.oneone,
+      'message': chatModel.message ?? '',
+      'image': chatModel.image ?? '',
+      'from_id': chatModel.fromId ?? '',
+      'time': chatModel.time,
+      'from_name': '',
     };
   }
 }

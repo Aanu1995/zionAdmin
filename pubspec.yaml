@@ -21,7 +21,6 @@ dependencies:
   expansion_tile_card: ^1.0.3
   shimmer: ^1.1.1
   animations: ^1.0.0+5
-  badges: ^1.1.1
   flutter_keyboard_visibility: ^0.8.0
 
   app_settings: ^3.0.1
@@ -42,7 +41,7 @@ dependencies:
   google_sign_in: ^4.1.4
   firebase_storage: ^3.1.3
   firebase_database: ^3.1.3
-  onesignal_flutter: ^2.3.4
+  onesignal_flutter: ^2.4.0
   timeago: ^2.0.26
 
 dev_dependencies:

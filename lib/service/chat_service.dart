@@ -28,14 +28,16 @@ class ChatServcice {
   }
 
   //update messageStatus to seen
-  static updateMessageStatus({String chatId, int status, String documentId}) {
+  static updateMessageStatus({String chatId, List<String> messagesId}) {
     try {
-      Firestore.instance
-          .collection(FirebaseUtils.chats)
-          .document(chatId)
-          .collection(FirebaseUtils.messages)
-          .document(documentId)
-          .updateData({'messageStatus': status});
+      final docRef =
+          Firestore.instance.collection(FirebaseUtils.chats).document(chatId);
+      Firestore.instance.runTransaction((transaction) async {
+        messagesId.forEach((id) async {
+          final doc = docRef.collection(FirebaseUtils.messages).document(id);
+          await transaction.update(doc, {'messageStatus': 2});
+        });
+      });
     } catch (e) {}
   }
 

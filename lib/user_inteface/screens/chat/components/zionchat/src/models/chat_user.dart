@@ -29,12 +29,24 @@ class ChatUser {
     this.uid = uid != null ? uid : Uuid().v4().toString();
   }
 
+  var random = new Random();
+
+  List<Color> titleColor = [
+    Colors.red,
+    Colors.blue,
+    Colors.orange,
+    Colors.purple,
+    Colors.green,
+    Colors.indigo,
+    Colors.pink,
+  ];
+
   ChatUser.fromJson(Map<dynamic, dynamic> json) {
     uid = json['uid'];
     name = json['name'];
     avatar = json['avatar'];
     containerColor = json['containerColor'];
-    color = json['color'];
+    color = titleColor[json['color'] ?? 3];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,7 +56,7 @@ class ChatUser {
     data['name'] = name;
     data['avatar'] = avatar;
     data['containerColor'] = containerColor;
-    data['color'] = color;
+    data['color'] = random.nextInt(7);
 
     return data;
   }

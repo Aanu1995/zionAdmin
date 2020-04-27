@@ -22,12 +22,10 @@ class MessageContainer extends StatelessWidget {
 
   /// A flag which is used for assiging styles
   final bool isUser;
-  final Color fromColor;
 
   const MessageContainer({
     @required this.message,
     @required this.timeFormat,
-    @required this.fromColor,
     this.messageImageBuilder,
     this.parsePatterns = const <MatchText>[],
     this.isUser,
@@ -37,8 +35,8 @@ class MessageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 1,
-      ),
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
+          minWidth: MediaQuery.of(context).size.width * 0.3),
       child: Padding(
         padding: EdgeInsets.only(top: 12),
         child: ClipRRect(
@@ -59,90 +57,114 @@ class MessageContainer extends StatelessWidget {
               color: isUser
                   ? Theme.of(context).accentColor.withOpacity(0.3)
                   : Colors.grey[300],
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  if (message.user.name != null && !isUser)
-                    Container(
-                      margin:
-                          EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
-                      child: Text(
-                        message.user.name,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500,
-                          color: fromColor,
-                        ),
-                      ),
-                    ),
-                  if (message.image != null || message.imageFile != null)
-                    if (messageImageBuilder != null)
-                      Container(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: messageImageBuilder(
-                            message.image, message.imageFile),
-                      ),
-                  if (message.text.isNotEmpty && message.text != null)
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: 8.0, right: 8.0, top: 8.0, bottom: 5.0),
-                      child: ParsedText(
-                        parse: parsePatterns,
-                        text: message.text,
-                        style: TextStyle(
-                          fontSize: 15.5,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  isUser
-                      ? FittedBox(
-                          child: Padding(
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (message.user.name != null &&
+                            !isUser &&
+                            message.user.name.isNotEmpty)
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: 8.0, right: 16.0, top: 4.0),
+                            child: Text(
+                              message.user.name,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500,
+                                color: message.user.color,
+                              ),
+                            ),
+                          ),
+                        if (message.image != null || message.imageFile != null)
+                          if (messageImageBuilder != null)
+                            Container(
+                              padding: EdgeInsets.only(bottom: 8.0),
+                              child: messageImageBuilder(
+                                  message.image, message.imageFile),
+                            ),
+                        if (message.text.isNotEmpty && message.text != null)
+                          Padding(
                             padding: EdgeInsets.only(
-                                left: 8.0, bottom: 4.0, right: 8.0),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  timeFormat != null
-                                      ? timeFormat.format(message.createdAt)
-                                      : DateFormat('h:mm a')
-                                          .format(message.createdAt),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black54,
+                                left: 8.0, right: 8.0, top: 8.0, bottom: 5.0),
+                            child: ParsedText(
+                              parse: parsePatterns,
+                              text: message.text,
+                              style: TextStyle(
+                                fontSize: 15.5,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  isUser
+                      ? Positioned(
+                          right: 0.0,
+                          bottom: 0.0,
+                          child: FittedBox(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                left: 8.0,
+                                bottom: 4.0,
+                                right: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    timeFormat != null
+                                        ? timeFormat.format(message.createdAt)
+                                        : DateFormat('h:mm a')
+                                            .format(message.createdAt),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 4.0),
-                                if (message.messageStatus == -1)
-                                  statusIcon(icon: Icons.query_builder),
-                                if (message.messageStatus == 0)
-                                  statusIcon(icon: Icons.done),
-                                if (message.messageStatus == 1)
-                                  statusIcon(icon: Icons.done_all),
-                                if (message.messageStatus == 2)
-                                  statusIcon(
-                                    icon: Icons.done_all,
-                                    color: Colors.blue,
-                                  ),
-                              ],
+                                  SizedBox(width: 4.0),
+                                  if (message.messageStatus == -1)
+                                    statusIcon(icon: Icons.query_builder),
+                                  if (message.messageStatus == 0)
+                                    statusIcon(icon: Icons.done),
+                                  if (message.messageStatus == 1)
+                                    statusIcon(icon: Icons.done_all),
+                                  if (message.messageStatus == 2)
+                                    statusIcon(
+                                      icon: Icons.done_all,
+                                      color: Colors.blue,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         )
-                      : Padding(
-                          padding: EdgeInsets.only(
-                              left: 8.0, bottom: 4.0, right: 8.0),
-                          child: Text(
-                            timeFormat != null
-                                ? timeFormat.format(message.createdAt)
-                                : DateFormat('h:mm a')
-                                    .format(message.createdAt),
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black54,
+                      : Positioned(
+                          bottom: 0.0,
+                          right: 0.0,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 8.0, bottom: 4.0, right: 8.0),
+                            child: Text(
+                              timeFormat != null
+                                  ? timeFormat.format(message.createdAt)
+                                  : DateFormat('h:mm a')
+                                      .format(message.createdAt),
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
                         ),
@@ -158,7 +180,7 @@ class MessageContainer extends StatelessWidget {
   Widget statusIcon({IconData icon, Color color}) {
     return Icon(
       icon,
-      size: 20.0,
+      size: 18.0,
       color: color ?? Colors.black38,
     );
   }
