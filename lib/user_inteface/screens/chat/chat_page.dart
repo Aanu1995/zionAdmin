@@ -41,11 +41,9 @@ class ChatPage extends StatelessWidget {
                 snapshot.connectionState == ConnectionState.done) {
               chatList = snapshot.data.documents;
               if (chatList.length == 0) return Container();
-              return ListView.builder(
-                itemCount: chatList.length,
-                itemBuilder: (context, index) {
-                  final chat = chatList[index].data;
-                  // checks the chatType
+              return ListView(
+                children: chatList.map((f) {
+                  final chat = f.data;
                   final chatType = chat['chat_type'];
                   if (chatType == FirebaseUtils.oneone) {
                     ChatModel oneone = ChatModel.fromMap(map: chat);
@@ -56,7 +54,7 @@ class ChatPage extends StatelessWidget {
                     return GroupChatWidget(group: group, user: userProfile);
                   }
                   return Offstage();
-                },
+                }).toList(),
               );
             }
             return ShimmerLoadingList();

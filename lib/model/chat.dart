@@ -149,17 +149,23 @@ class Members {
 class Member {
   String name;
   String id;
+  bool admin;
 
-  Member({this.id, this.name}) : assert(name != null && id != null);
+  Member({this.id, this.name, this.admin}) : assert(name != null && id != null);
 
   factory Member.fromMap({Map<String, dynamic> map}) {
-    return Member(name: map['name'], id: map['id']);
+    return Member(
+      name: map['name'],
+      id: map['id'],
+      admin: map['admin'],
+    );
   }
 
   static Map<String, dynamic> toMap(Member member) {
     return {
       'name': member.name ?? '',
       'id': member.id ?? '',
+      'admin': member.admin ?? false,
     };
   }
 }

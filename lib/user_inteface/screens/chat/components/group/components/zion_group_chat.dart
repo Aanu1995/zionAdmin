@@ -47,6 +47,7 @@ class _ZionGroupChatState extends State<ZionGroupChat> {
   @override
   void initState() {
     super.initState();
+
     // checks if user is typing
     // send notification to the server if typing
     // and stop typing

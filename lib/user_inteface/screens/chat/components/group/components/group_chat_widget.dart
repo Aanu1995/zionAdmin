@@ -70,7 +70,6 @@ class GroupChatWidget extends StatelessWidget {
         ),
         onTap: () async {
           // takes user to the group chat page
-
           pushDynamicScreen(
             context,
             screen: MaterialPageRoute(

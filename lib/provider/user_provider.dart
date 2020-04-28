@@ -16,7 +16,10 @@ class UserProvider {
 
   void getDefaultData() async {
     var box = await Hive.openBox(GlobalDataUtils.zion);
-    _userProfile = UserProfile.fromMap(map: await box.get('user'));
+    final map = await box.get('user');
+    if (map != null) {
+      _userProfile = UserProfile.fromMap(map: map);
+    }
   }
 
   void getUserData() async {

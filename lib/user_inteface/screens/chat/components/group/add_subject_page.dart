@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:zion/provider/createGroupProvider.dart';
+import 'package:zion/provider/user_provider.dart';
 import 'package:zion/service/group_chat_service.dart';
 import 'package:zion/user_inteface/components/custom_bottomsheets.dart';
 import 'package:zion/user_inteface/components/custom_dialogs.dart';
@@ -217,12 +218,16 @@ class _AddSubjectFieldState extends State<AddSubjectField> {
         return;
       }
       final String groupName = _controller.text.trim().toString();
-      final participants =
-          Provider.of<CreateGroupProvider>(context, listen: false).getList;
+      final participants = [
+        Provider.of<UserProvider>(context).userProfile,
+        ...Provider.of<CreateGroupProvider>(context, listen: false).getList
+      ];
+
       final result = await GroupChatService.createGroup(
         groupName,
         participants,
         file: _imageFile,
+        adminId: Provider.of<UserProvider>(context).userProfile.id,
       );
       CustomDialogs.closeProgressDialog(context);
       if (result) {
