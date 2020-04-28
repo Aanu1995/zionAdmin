@@ -7,7 +7,12 @@ class UserWidget extends StatelessWidget {
   final UserProfile userProfile;
   final void Function() onTap;
   final bool isTapped;
-  const UserWidget({this.userProfile, this.onTap, this.isTapped = false});
+  final bool isAdded;
+  const UserWidget(
+      {this.userProfile,
+      this.onTap,
+      this.isTapped = false,
+      this.isAdded = false});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -53,21 +58,40 @@ class UserWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  userProfile.name,
-                  style: TextStyle(
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                isAdded
+                    ? Text(
+                        userProfile.name,
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    : Text(
+                        userProfile.name,
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                 EmptySpace(multiple: 0.5),
-                Text(
-                  userProfile.phoneNumber,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    color: Colors.black54,
-                  ),
-                ),
+                isAdded
+                    ? Text(
+                        'Already added to the group',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    : Text(
+                        userProfile.phoneNumber,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          color: Colors.black54,
+                        ),
+                      ),
               ],
             )
           ],

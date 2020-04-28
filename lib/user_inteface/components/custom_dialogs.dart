@@ -88,7 +88,7 @@ class CustomDialogs {
   }
 
 // show the dialog for circularprogress indicator
-  static showProgressDialog(BuildContext context) {
+  static showProgressDialog(BuildContext context, {String text}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -110,7 +110,7 @@ class CustomDialogs {
                       width: 24.0,
                     ),
                     Text(
-                      "Creating Group...",
+                      text ?? "Creating Group...",
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,

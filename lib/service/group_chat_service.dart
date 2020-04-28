@@ -86,6 +86,51 @@ class GroupChatService {
     }
   }
 
+// add participants to the group
+  static Future<bool> addParticipants(Group group, List participants) async {
+    final createdAt = DateTime.now().millisecondsSinceEpoch;
+    // list of members in the group
+    List<Member> members = [];
+    participants.forEach((user) => members.add(
+          Member(
+            id: user.id,
+            name: user.name,
+            admin: false,
+          ),
+        ));
+    // group
+
+    try {
+      final document =
+          Firestore.instance.collection(FirebaseUtils.chats).document(group.id);
+      for (int i = 0; i < members.length; i++) {
+        // creates all the members
+        await document.collection('members').document(members[i].id).setData(
+              Member.toMap(
+                members[i],
+              ),
+            );
+      }
+      for (int i = 0; i < members.length; i++) {
+        // creates all the members
+        await Firestore.instance
+            .collection(FirebaseUtils.user)
+            .document(members[i].id)
+            .collection("groups")
+            .document(group.id)
+            .setData({
+          'name': group.name,
+          'id': group.id,
+          'time': createdAt,
+        });
+      }
+      await GroupChatService.getMembersListFromServer(group.id);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 // this upload the group icon to the storage
   static Future<String> uploadGroupIcon(String groupId, File file) async {
     try {
@@ -119,7 +164,7 @@ class GroupChatService {
   }
 
   // gets members list from the server
-  static void getMembersListFromServer(String groupId) async {
+  static getMembersListFromServer(String groupId) async {
     var box = await Hive.openBox(GlobalDataUtils.zion);
     bool connection = await DataConnectionChecker().hasConnection;
     if (!connection) {
@@ -144,7 +189,6 @@ class GroupChatService {
         list.add(data.data);
       }
     }
-    print(list.length);
     if (list.isNotEmpty) {
       box.put(groupId, list);
     }
