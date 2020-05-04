@@ -1,30 +1,40 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:provider/provider.dart';
 import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
+import 'package:zion/provider/createGroupProvider.dart';
+import 'package:zion/user_inteface/screens/chat/components/full_image.dart';
 import 'package:zion/user_inteface/screens/chat/components/group/components/add_participants.dart';
+import 'package:zion/user_inteface/screens/chat/components/group/components/edit_subject.dart';
 import 'package:zion/user_inteface/utils/device_scale/flutter_scale_aware.dart';
 import 'package:zion/service/group_chat_service.dart';
 import 'package:zion/user_inteface/screens/chat/components/zionchat/zion.dart';
 import 'package:zion/user_inteface/screens/settings/components/components.dart';
+import 'package:zion/user_inteface/utils/imageUtils.dart';
 
 class GroupDetails extends StatelessWidget {
-  final Group group;
   final String userId;
-  const GroupDetails({this.group, this.userId});
+  const GroupDetails({this.userId});
+
+  static List<UserProfile> _groupMembers = [];
+  static Group group;
+
   @override
   Widget build(BuildContext context) {
+    group = Provider.of<CurrentGroupProvider>(context).getGroup;
+    // computes time that the group was created
     String createdAt = DateFormat.yMd()
         .format(DateTime.fromMillisecondsSinceEpoch(group.createdAt));
-
+    // creates an accent color
+    final accentColor = Theme.of(context).accentColor;
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              expandedHeight: MediaQuery.of(context).size.height * 0.4,
+              expandedHeight: 300.0,
               pinned: true,
               flexibleSpace: InkWell(
                 child: FlexibleSpaceBar(
@@ -34,33 +44,36 @@ class GroupDetails extends StatelessWidget {
                     children: [
                       Text(
                         group.name,
-                        style: GoogleFonts.abel(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Created on $createdAt',
-                        style: GoogleFonts.abel(
-                            fontWeight: FontWeight.bold, fontSize: 15.0),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.0,
+                        ),
                       ),
                     ],
                   ),
-                  background: CachedNetworkImage(
-                    imageUrl: group.groupIcon,
-                    fit: BoxFit.cover,
-                  ),
+                  background: group.groupIcon.isEmpty
+                      ? Image.asset(ImageUtils.defaultProfile)
+                      : CachedNetworkImage(
+                          imageUrl: group.groupIcon,
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                onTap: () {},
+                onTap: () => _fullImage(context),
               ),
               actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => _editSubject(context, group.name),
+                ),
                 IconButton(
                   icon: Icon(
                     Icons.person_add,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {},
+                  onPressed: () => _addParticipants(context),
                 ),
               ],
             ),
@@ -71,6 +84,7 @@ class GroupDetails extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData &&
                 snapshot.connectionState == ConnectionState.done) {
+              _groupMembers = snapshot.data; // -----
               return ListView(
                 padding: EdgeInsets.all(0.0),
                 children: <Widget>[
@@ -85,7 +99,7 @@ class GroupDetails extends StatelessWidget {
                             '${snapshot.data.length} participants',
                             style: TextStyle(
                               fontSize: 17.0,
-                              color: Colors.green,
+                              color: accentColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -94,7 +108,7 @@ class GroupDetails extends StatelessWidget {
                           Column(children: [
                             ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: Theme.of(context).accentColor,
+                                backgroundColor: accentColor,
                                 radius: context.scale(22.5),
                                 child: Icon(
                                   Icons.person_add,
@@ -108,17 +122,7 @@ class GroupDetails extends StatelessWidget {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              onTap: () => pushDynamicScreen(
-                                context,
-                                screen: MaterialPageRoute(
-                                  builder: (context) => AddParticipants(
-                                    groupMembers: snapshot.data,
-                                    group: group,
-                                  ),
-                                ),
-                                platformSpecific: true,
-                                withNavBar: false,
-                              ),
+                              onTap: () => _addParticipants(context),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 16.0),
@@ -126,7 +130,7 @@ class GroupDetails extends StatelessWidget {
                             ),
                             ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: Theme.of(context).accentColor,
+                                backgroundColor: accentColor,
                                 radius: context.scale(22.5),
                                 child: Icon(
                                   Icons.link,
@@ -151,7 +155,7 @@ class GroupDetails extends StatelessWidget {
                             children: snapshot.data.map((member) {
                               return ListTile(
                                 contentPadding: EdgeInsets.symmetric(
-                                    vertical: 6.0, horizontal: 16.0),
+                                    vertical: 2.0, horizontal: 16.0),
                                 leading: CustomCircleAvatar(
                                   size: 45.0,
                                   profileURL: member.profileURL,
@@ -209,6 +213,39 @@ class GroupDetails extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  void _addParticipants(BuildContext context) {
+    pushDynamicScreen(
+      context,
+      screen: MaterialPageRoute(
+        builder: (context) => AddParticipants(
+          groupMembers: _groupMembers,
+          group: group,
+        ),
+      ),
+      platformSpecific: true,
+      withNavBar: false,
+    );
+  }
+
+  void _editSubject(BuildContext context, String subject) {
+    pushDynamicScreen(
+      context,
+      screen:
+          MaterialPageRoute(builder: (context) => EditSubject(group: group)),
+      platformSpecific: true,
+      withNavBar: false,
+    );
+  }
+
+  void _fullImage(BuildContext context) {
+    pushDynamicScreen(
+      context,
+      screen: MaterialPageRoute(builder: (context) => GroupFullIcon()),
+      platformSpecific: true,
+      withNavBar: false,
     );
   }
 }

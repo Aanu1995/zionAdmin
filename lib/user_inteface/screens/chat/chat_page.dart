@@ -47,11 +47,27 @@ class ChatPage extends StatelessWidget {
                   final chatType = chat['chat_type'];
                   if (chatType == FirebaseUtils.oneone) {
                     ChatModel oneone = ChatModel.fromMap(map: chat);
-                    return ChatWidget(oneone: oneone, user: userProfile);
+                    return Column(
+                      children: [
+                        ChatWidget(oneone: oneone, user: userProfile),
+                        if (chatList.length > 1)
+                          const Padding(
+                            padding: EdgeInsets.only(left: 90.0, right: 16.0),
+                            child: Divider(height: 8.0),
+                          )
+                      ],
+                    );
                   }
                   if (chatType == FirebaseUtils.group) {
                     Group group = Group.fromMap(map: chat);
-                    return GroupChatWidget(group: group, user: userProfile);
+                    return Column(children: [
+                      GroupChatWidget(group: group, user: userProfile),
+                      if (chatList.length > 1)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 90.0, right: 16.0),
+                          child: Divider(height: 8.0),
+                        )
+                    ]);
                   }
                   return Offstage();
                 }).toList(),

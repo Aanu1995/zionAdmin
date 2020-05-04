@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
 
 class CreateGroupProvider with ChangeNotifier {
@@ -26,4 +27,15 @@ class CreateGroupProvider with ChangeNotifier {
   void emptyList() {
     _groupParticipantList.clear();
   }
+}
+
+// this get the current group being viewed
+class CurrentGroupProvider {
+  Group _group;
+
+  set setGroup(Group group) {
+    this._group = group;
+  }
+
+  Group get getGroup => this._group;
 }

@@ -4,10 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
+import 'package:zion/provider/createGroupProvider.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
 import 'package:zion/user_inteface/utils/global_data_utils.dart';
 
@@ -148,6 +151,42 @@ class GroupChatService {
     }
   }
 
+  static updateGroupIcon(
+      BuildContext context, String groupId, File file) async {
+    try {
+      final url = await uploadGroupIcon(groupId, file);
+      if (url != null) {
+        await Firestore.instance
+            .collection(FirebaseUtils.chats)
+            .document(groupId)
+            .updateData({
+          'group_icon': url,
+        });
+        await getCurrentGroup(groupId, context);
+        return FirebaseUtils.success;
+      } else {
+        throw Exception();
+      }
+    } catch (e) {
+      return FirebaseUtils.error;
+    }
+  }
+
+  static deleteGroupIcon(BuildContext context, String groupId) async {
+    try {
+      await Firestore.instance
+          .collection(FirebaseUtils.chats)
+          .document(groupId)
+          .updateData({
+        'group_icon': '',
+      });
+      await getCurrentGroup(groupId, context);
+      return FirebaseUtils.success;
+    } catch (e) {
+      return FirebaseUtils.error;
+    }
+  }
+
 // gets the members list from the local database
   static Future<List<UserProfile>> getMembersListFromLocal(
       String groupId) async {
@@ -192,5 +231,26 @@ class GroupChatService {
     if (list.isNotEmpty) {
       box.put(groupId, list);
     }
+  }
+
+  // change group subject
+  static changeGroupSubject(
+      {BuildContext context, String groupId, String subject}) async {
+    await Firestore.instance
+        .collection(FirebaseUtils.chats)
+        .document(groupId)
+        .updateData({
+      'name': subject,
+    });
+    await getCurrentGroup(groupId, context);
+  }
+
+  static getCurrentGroup(String groupId, BuildContext context) async {
+    final doc = await Firestore.instance
+        .collection(FirebaseUtils.chats)
+        .document(groupId)
+        .get();
+    Group group = Group.fromMap(map: doc.data);
+    Provider.of<CurrentGroupProvider>(context, listen: false).setGroup = group;
   }
 }

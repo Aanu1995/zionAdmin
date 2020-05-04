@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zion/model/chat.dart';
 import 'package:zion/service/chat_service.dart';
 import 'package:zion/user_inteface/components/empty_space.dart';
@@ -37,10 +36,10 @@ class AdminChatPage extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data.data == null) {
           return Text(
             responderProfile.online ? 'Online' : lastSeen,
-            style: GoogleFonts.abel(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              fontSize: 14.0,
+              fontSize: 13.0,
             ),
           );
         } else {
@@ -48,20 +47,20 @@ class AdminChatPage extends StatelessWidget {
           if (memberId != null && memberId.isNotEmpty && memberId != user.id) {
             return Text(
               'typing',
-              style: GoogleFonts.abel(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 14.0,
+                fontSize: 13.0,
               ),
             );
           }
         }
         return Text(
           responderProfile.online ? 'Online' : lastSeen,
-          style: GoogleFonts.abel(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
-            fontSize: 14.0,
+            fontSize: 13.0,
           ),
         );
       },
@@ -85,7 +84,7 @@ class AdminChatPage extends StatelessWidget {
               children: [
                 Text(
                   responderProfile.name,
-                  style: GoogleFonts.abel(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 userTyping(),
               ],

@@ -21,12 +21,9 @@ class _CustomMultiproviderState extends State<CustomMultiprovider> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(
-          create: (context) => _dependecyInjection,
-        ),
-        Provider(
-          create: (context) => User(),
-        ),
+        Provider(create: (context) => _dependecyInjection),
+        Provider(create: (context) => User()),
+        Provider(create: (_) => CurrentGroupProvider()),
         ChangeNotifierProvider(
           create: (context) => SplashAppStatus(),
         ),

@@ -23,7 +23,7 @@ class MyHomePage extends StatelessWidget {
         Provider(create: (_) => _userProvider),
         StreamProvider<QuerySnapshot>(
           create: (_) => _chatStreams.allChatsStream,
-        )
+        ),
       ],
       child: DefaultPage(),
     );

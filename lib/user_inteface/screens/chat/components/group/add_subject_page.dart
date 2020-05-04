@@ -150,8 +150,14 @@ class _AddSubjectFieldState extends State<AddSubjectField> {
                     Expanded(
                       child: TextField(
                         controller: _controller,
+                        maxLength: 25,
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w400,
+                        ),
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(0.0),
+                          contentPadding: EdgeInsets.only(bottom: 5.0),
+                          isDense: true,
                           hintText: "Type a group subject here...",
                         ),
                       ),

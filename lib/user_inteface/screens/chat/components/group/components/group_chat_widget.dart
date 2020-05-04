@@ -2,8 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:provider/provider.dart';
 import 'package:zion/model/chat.dart';
 import 'package:zion/model/profile.dart';
+import 'package:zion/provider/createGroupProvider.dart';
+import 'package:zion/user_inteface/components/custom_dialogs.dart';
 import 'package:zion/user_inteface/screens/chat/components/group/components/group_chat_page.dart';
 import 'package:zion/user_inteface/screens/settings/components/components.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
@@ -24,13 +27,16 @@ class GroupChatWidget extends StatelessWidget {
       padding: EdgeInsets.only(left: 16.0),
       child: ListTile(
         contentPadding: EdgeInsets.only(left: 0.0, right: 12.0),
-        leading: CircleAvatar(
-          radius: 28.0,
-          backgroundColor: Colors.grey,
-          child: CustomCircleAvatar(
-            size: 67.0,
-            profileURL: group.groupIcon,
+        leading: InkWell(
+          child: CircleAvatar(
+            radius: 28.0,
+            backgroundColor: Colors.grey,
+            child: CustomCircleAvatar(
+              size: 67.0,
+              profileURL: group.groupIcon,
+            ),
           ),
+          onTap: () => CustomDialogs.showGroupDialog(context, group, user),
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,11 +76,12 @@ class GroupChatWidget extends StatelessWidget {
         ),
         onTap: () async {
           // takes user to the group chat page
+          Provider.of<CurrentGroupProvider>(context, listen: false).setGroup =
+              group;
           pushDynamicScreen(
             context,
             screen: MaterialPageRoute(
               builder: (context) => GroupChatPage(
-                group: group,
                 user: user,
               ),
             ),
@@ -129,7 +136,7 @@ class UserTyping extends StatelessWidget {
           String membername = snapshot.data.data['typing'];
           if (membername != null &&
               membername.isNotEmpty &&
-              membername != user.id) {
+              membername != user.name) {
             return Text(
               '$membername: is typing',
               style: TextStyle(
