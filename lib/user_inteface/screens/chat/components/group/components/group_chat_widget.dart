@@ -27,16 +27,19 @@ class GroupChatWidget extends StatelessWidget {
       padding: EdgeInsets.only(left: 16.0),
       child: ListTile(
         contentPadding: EdgeInsets.only(left: 0.0, right: 12.0),
-        leading: InkWell(
-          child: CircleAvatar(
-            radius: 28.0,
-            backgroundColor: Colors.grey,
-            child: CustomCircleAvatar(
-              size: 67.0,
-              profileURL: group.groupIcon,
+        leading: Hero(
+          tag: group.id,
+          child: InkWell(
+            child: CircleAvatar(
+              radius: 28.0,
+              backgroundColor: Colors.grey,
+              child: CustomCircleAvatar(
+                size: 67.0,
+                profileURL: group.groupIcon,
+              ),
             ),
+            onTap: () => CustomDialogs.showGroupDialog(context, group, user),
           ),
-          onTap: () => CustomDialogs.showGroupDialog(context, group, user),
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

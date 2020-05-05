@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zion/model/profile.dart';
+import 'package:zion/provider/user_provider.dart';
 import 'package:zion/user_inteface/components/custom_dialogs.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
 
@@ -13,34 +16,10 @@ class UserProfileService {
         profileURL: "",
         address: "my address is in Nigeria",
       );
-  // stream of user profile date
-  StreamController<UserProfile> userProfileStreamController =
-      StreamController.broadcast();
-
-  // fetch user data from the server
-  void fetchUserData() async {
-    try {
-      final user = await FirebaseUtils.auth.currentUser(); // get current user
-      final documentSnapshot = await FirebaseUtils.firestore
-          .collection(FirebaseUtils.admin)
-          .document(user.uid)
-          .get();
-      if (documentSnapshot != null) {
-        final userProfile = UserProfile.fromMap(map: documentSnapshot.data);
-        userProfileStreamController.add(userProfile); // add data to stream
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-// displose the stream
-  void dispose() {
-    userProfileStreamController.close();
-  }
 
   // upload user profile to the server
-  Future<String> uploadImage(final imageFile) async {
+  static Future<String> uploadImage(
+      BuildContext context, final imageFile) async {
     try {
       // gets userid
       final user = await FirebaseUtils.auth.currentUser();
@@ -60,7 +39,7 @@ class UserProfileService {
             .document(user.uid)
             .updateData({FirebaseUtils.profileURL: url});
         // calls the function that gets user details data from server
-        fetchUserData();
+        await Provider.of<UserProvider>(context, listen: false).getUserData();
         // return profile url
         return url;
       } else {
@@ -74,7 +53,7 @@ class UserProfileService {
   }
 
 // delete user's profile image
-  deleteProfileImage() async {
+  static deleteProfileImage(BuildContext context) async {
     try {
       // gets userid
       final user = await FirebaseUtils.auth.currentUser();
@@ -84,7 +63,7 @@ class UserProfileService {
           .document(user.uid)
           .updateData({FirebaseUtils.profileURL: ''});
       // calls the function that gets user details data from server
-      fetchUserData();
+      await Provider.of<UserProvider>(context, listen: false).getUserData();
       return "";
     } catch (e) {
       // returns error
@@ -93,7 +72,7 @@ class UserProfileService {
   }
 
   // edit user address
-  editAddress(String address, context) async {
+  static editAddress(String address, BuildContext context) async {
     try {
       // gets userid
       final user = await FirebaseUtils.auth.currentUser();
@@ -103,7 +82,7 @@ class UserProfileService {
           .document(user.uid)
           .updateData({FirebaseUtils.address: address});
       // calls the function that gets user details data from server
-      fetchUserData();
+      await Provider.of<UserProvider>(context, listen: false).getUserData();
     } catch (e) {
       // returns error
       CustomDialogs.showErroDialog(context, FirebaseUtils.error);
@@ -111,7 +90,7 @@ class UserProfileService {
   }
 
   // edit user address
-  editPhone(String phone, context) async {
+  static editPhone(String phone, BuildContext context) async {
     try {
       // gets userid
       final user = await FirebaseUtils.auth.currentUser();
@@ -121,7 +100,7 @@ class UserProfileService {
           .document(user.uid)
           .updateData({FirebaseUtils.phone: phone});
       // calls the function that gets user details data from server
-      fetchUserData();
+      await Provider.of<UserProvider>(context, listen: false).getUserData();
     } catch (e) {
       // returns error
       CustomDialogs.showErroDialog(context, FirebaseUtils.error);

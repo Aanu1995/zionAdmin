@@ -4,7 +4,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
-import 'package:zion/controller/chat_streams.dart';
 import 'package:zion/model/app.dart';
 import 'package:zion/provider/user_provider.dart';
 import 'package:zion/service/user_profile_service.dart';
@@ -12,23 +11,6 @@ import 'package:zion/user_inteface/screens/chat/chat_page.dart';
 import 'package:zion/user_inteface/screens/home/home_page.dart';
 import 'package:zion/user_inteface/screens/search/search_page.dart';
 import 'package:zion/user_inteface/screens/settings/settings_page.dart';
-
-class MyHomePage extends StatelessWidget {
-  final ChatStreams _chatStreams = ChatStreams();
-  final UserProvider _userProvider = UserProvider();
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider(create: (_) => _userProvider),
-        StreamProvider<QuerySnapshot>(
-          create: (_) => _chatStreams.allChatsStream,
-        ),
-      ],
-      child: DefaultPage(),
-    );
-  }
-}
 
 class DefaultPage extends StatefulWidget {
   DefaultPage({Key key}) : super(key: key);
@@ -77,6 +59,8 @@ class _DefaultPageState extends State<DefaultPage> {
     });
     // initialize
     Provider.of<User>(context, listen: false).getUser();
+    Provider.of<UserProvider>(context, listen: false);
+    Provider.of<QuerySnapshot>(context, listen: false);
   }
 
 // list of bottom navigation bar items

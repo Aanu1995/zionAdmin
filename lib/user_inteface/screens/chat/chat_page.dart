@@ -17,7 +17,7 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    userProfile = Provider.of<UserProvider>(context).userProfile;
+    userProfile = Provider.of<UserProvider>(context, listen: false).userProfile;
     return Scaffold(
       appBar: AppBar(
         title: Text("Chats"),

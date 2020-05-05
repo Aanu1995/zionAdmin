@@ -2,19 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zion/provider/user_provider.dart';
 import 'package:zion/service/user_profile_service.dart';
 import 'package:zion/user_inteface/components/custom_bottomsheets.dart';
 import 'package:zion/user_inteface/components/custom_dialogs.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:zion/user_inteface/screens/settings/components/components.dart';
-import 'package:zion/user_inteface/utils/dependency_injection.dart';
 import 'package:zion/user_inteface/utils/firebase_utils.dart';
 import 'package:zion/user_inteface/utils/imageUtils.dart';
 
 class ProfilePage extends StatefulWidget {
-  final profileURL;
-  ProfilePage({this.profileURL});
-
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -23,20 +20,13 @@ class _ProfilePageState extends State<ProfilePage> {
   File _imageFile;
   bool isLoading = false;
 
-  String profileURL;
-
-  UserProfileService userProfileService;
-
   @override
   void initState() {
     super.initState();
-    profileURL = widget.profileURL;
   }
 
   @override
   Widget build(BuildContext context) {
-    userProfileService = Provider.of<DependecyInjection>(context, listen: false)
-        .userProfileService;
     return Scaffold(
       appBar: AppBar(title: Text('Profile')),
       body: Hero(
@@ -48,9 +38,15 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
-                CustomCircleAvatar(
-                  profileURL: profileURL,
-                  onPressed: onPressed,
+                Selector<UserProvider, String>(
+                  builder: (cont, profileURL, child) {
+                    return CustomCircleAvatar(
+                      profileURL: profileURL,
+                      onPressed: onPressed,
+                    );
+                  },
+                  selector: (context, userPro) =>
+                      userPro.userProfile.profileURL,
                 ),
                 if (isLoading)
                   SizedBox(
@@ -99,9 +95,8 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       isLoading = true;
     });
-    String url = await userProfileService.deleteProfileImage();
+    String url = await UserProfileService.deleteProfileImage(context);
     if (url != FirebaseUtils.error) {
-      profileURL = url;
     } else {
       CustomDialogs.showErroDialog(context, url);
     }
@@ -121,9 +116,8 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         isLoading = true;
       });
-      String url = await userProfileService.uploadImage(_imageFile);
+      String url = await UserProfileService.uploadImage(context, _imageFile);
       if (url != FirebaseUtils.error) {
-        profileURL = url;
       } else {
         CustomDialogs.showErroDialog(context, url);
       }

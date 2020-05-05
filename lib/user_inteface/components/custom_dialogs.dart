@@ -146,100 +146,103 @@ class CustomDialogs {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return Container(
-          margin: EdgeInsets.only(
-            top: height * 0.1,
-            left: width * 0.14,
-            right: width * 0.14,
-            bottom: height * 0.4,
-          ),
-          child: Card(
-            margin: EdgeInsets.all(0.0),
-            child: SizedBox(
-              height: 300.0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 10,
-                    child: SizedBox.expand(
-                      child: InkWell(
-                        child: Stack(
-                          children: <Widget>[
-                            group.groupIcon.isEmpty
-                                ? Image.asset(ImageUtils.defaultProfile)
-                                : CachedNetworkImage(
-                                    imageUrl: group.groupIcon,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ],
+        return Hero(
+          tag: group.id,
+          child: Container(
+            margin: EdgeInsets.only(
+              top: height * 0.1,
+              left: width * 0.14,
+              right: width * 0.14,
+              bottom: height * 0.4,
+            ),
+            child: Card(
+              margin: EdgeInsets.all(0.0),
+              child: SizedBox(
+                height: 300.0,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 10,
+                      child: SizedBox.expand(
+                        child: InkWell(
+                          child: Stack(
+                            children: <Widget>[
+                              group.groupIcon.isEmpty
+                                  ? Image.asset(ImageUtils.defaultProfile)
+                                  : CachedNetworkImage(
+                                      imageUrl: group.groupIcon,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            pushDynamicScreen(
+                              context,
+                              screen: MaterialPageRoute(
+                                  builder: (context) => GroupFullIcon()),
+                              platformSpecific: true,
+                              withNavBar: false,
+                            );
+                          },
                         ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          pushDynamicScreen(
-                            context,
-                            screen: MaterialPageRoute(
-                                builder: (context) => GroupFullIcon()),
-                            platformSpecific: true,
-                            withNavBar: false,
-                          );
-                        },
                       ),
                     ),
-                  ),
-                  Divider(height: 0.0),
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.message,
-                            color: accentColor,
-                            size: 30.0,
-                          ),
-                          onPressed: () {
-                            Provider.of<CurrentGroupProvider>(
-                              context,
-                              listen: false,
-                            ).setGroup = group;
-                            Navigator.pop(context);
-                            pushDynamicScreen(
-                              context,
-                              screen: MaterialPageRoute(
-                                builder: (context) => GroupChatPage(
-                                  user: user,
+                    Divider(height: 0.0),
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.message,
+                              color: accentColor,
+                              size: 30.0,
+                            ),
+                            onPressed: () {
+                              Provider.of<CurrentGroupProvider>(
+                                context,
+                                listen: false,
+                              ).setGroup = group;
+                              Navigator.pop(context);
+                              pushDynamicScreen(
+                                context,
+                                screen: MaterialPageRoute(
+                                  builder: (context) => GroupChatPage(
+                                    user: user,
+                                  ),
                                 ),
-                              ),
-                              platformSpecific: true,
-                              withNavBar: false,
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.info_outline,
-                            color: accentColor,
-                            size: 30.0,
+                                platformSpecific: true,
+                                withNavBar: false,
+                              );
+                            },
                           ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            pushDynamicScreen(
-                              context,
-                              screen: MaterialPageRoute(
-                                builder: (context) =>
-                                    GroupDetails(userId: user.id),
-                              ),
-                              platformSpecific: true,
-                              withNavBar: false,
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                  )
-                ],
+                          IconButton(
+                            icon: Icon(
+                              Icons.info_outline,
+                              color: accentColor,
+                              size: 30.0,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              pushDynamicScreen(
+                                context,
+                                screen: MaterialPageRoute(
+                                  builder: (context) =>
+                                      GroupDetails(userId: user.id),
+                                ),
+                                platformSpecific: true,
+                                withNavBar: false,
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

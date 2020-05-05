@@ -201,7 +201,7 @@ class __CustomFormFieldsState extends State<_CustomFormFields> {
         if (result == FirebaseUtils.success) {
           // Takes the user to the home page if login is successful
           Router.goToReplacementScreen(
-              context: context, page: Routes.MYHOMEPAGE);
+              context: context, page: Routes.DEFAULTPAGE);
         } else {
           // shows error message if login failed
           CustomDialogs.showErroDialog(context, result);

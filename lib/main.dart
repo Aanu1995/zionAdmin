@@ -9,7 +9,7 @@ import 'package:zion/model/app.dart';
 import 'package:zion/router/router.dart';
 import 'package:zion/user_inteface/components/custom_multiprovider.dart';
 import 'package:zion/user_inteface/screens/authentication/login_page.dart';
-import 'package:zion/user_inteface/screens/my_home_page.dart';
+import 'package:zion/user_inteface/screens/default_page.dart';
 import 'package:zion/user_inteface/screens/splash_page.dart';
 import 'package:zion/user_inteface/utils/device_scale/flutter_scale_aware.dart';
 import 'package:zion/user_inteface/utils/global_data_utils.dart';
@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
     // takes user to home page if authenticated else login page
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     if (user != null) {
-      page = MyHomePage();
+      page = DefaultPage();
     }
   }
 
